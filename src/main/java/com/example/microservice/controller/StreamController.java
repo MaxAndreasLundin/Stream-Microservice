@@ -23,6 +23,8 @@ public class StreamController {
             return new ResponseEntity<>(stream, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 

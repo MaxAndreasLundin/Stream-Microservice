@@ -6,12 +6,15 @@ import com.example.microservice.service.StreamService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,54 +22,90 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-class StreamServiceTest {
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = {StreamService.class})
+public class StreamServiceTest {
+    private static final String USER_ID = "Max";
+    private static final String VALID_VIDEO_ID = "13808230";
+    private static final String INVALID_VIDEO_ID = "INVALID_VIDEO_ID";
 
-    @Mock
-    private StreamRepository streamRepository;
-
-    @InjectMocks
+    @Autowired
     private StreamService streamService;
 
-    private String testUserId;
-    private String testVideoId;
+    @MockBean
+    private StreamRepository streamRepository;
+
+    @MockBean
+    private RestTemplate restTemplate;
+
+    private Stream stream;
 
     @BeforeEach
-    void setUp() {
-        testUserId = "max";
-        testVideoId = "13808230";
+    public void setUp() {
+        stream = new Stream();
+        stream.setId(1L);
+        stream.setUserId(USER_ID);
+        stream.setVideoId(VALID_VIDEO_ID);
+        stream.setStartTime(LocalDateTime.now());
+        stream.setEndTime(null);
     }
 
     @Test
-    void startStreamSuccess() {
-        when(streamRepository.findFirstByUserIdAndVideoIdAndEndTimeIsNull(testUserId, testVideoId)).thenReturn(Optional.empty());
-        Stream streamToSave = Stream.builder().userId(testUserId).videoId(testVideoId).startTime(LocalDateTime.now()).build();
-        when(streamRepository.save(any(Stream.class))).thenReturn(streamToSave);
+    public void startStream_validVideoId_startsNewStream() {
+        when(streamRepository.findAllByUserIdAndEndTimeIsNull(any())).thenReturn(List.of());
+        when(streamRepository.save(any(Stream.class))).thenReturn(stream);
+        when(restTemplate.getForEntity(any(String.class), eq(String.class))).thenReturn(new ResponseEntity<>("{\"id\": \"" + VALID_VIDEO_ID + "\"}", HttpStatus.OK));
 
-        Stream stream = streamService.startStream(testUserId, testVideoId);
-
-        assertNotNull(stream);
-        assertEquals(testUserId, stream.getUserId());
-        assertEquals(testVideoId, stream.getVideoId());
-        assertNotNull(stream.getStartTime());
-        assertNull(stream.getEndTime());
-
-        verify(streamRepository, times(1)).findFirstByUserIdAndVideoIdAndEndTimeIsNull(testUserId, testVideoId);
-        verify(streamRepository, times(1)).save(any(Stream.class));
+        Stream result = streamService.startStream(USER_ID, VALID_VIDEO_ID);
+        assertNotNull(result);
+        assertEquals(stream.getUserId(), result.getUserId());
+        assertEquals(stream.getVideoId(), result.getVideoId());
     }
 
     @Test
-    void startStreamExceedsLimit() {
-        Stream stream1 = Stream.builder().userId(testUserId).videoId("video1").startTime(LocalDateTime.now()).build();
-        Stream stream2 = Stream.builder().userId(testUserId).videoId("video2").startTime(LocalDateTime.now()).build();
-        List<Stream> activeStreams = Arrays.asList(stream1, stream2);
+    public void startStream_invalidVideoId_throwsIllegalArgumentException() {
+        when(restTemplate.getForEntity(any(String.class), eq(String.class))).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
-        when(streamRepository.findAllByUserIdAndEndTimeIsNull(testUserId)).thenReturn(activeStreams);
+        assertThrows(IllegalArgumentException.class, () -> streamService.startStream(USER_ID, INVALID_VIDEO_ID));
+    }
 
-        assertThrows(IllegalArgumentException.class, () -> streamService.startStream(testUserId, testVideoId));
+    @Test
+    public void startStream_userHasMaxRunningStreams_throwsIllegalStateException() {
+        when(streamRepository.findAllByUserIdAndEndTimeIsNull(any())).thenReturn(List.of(stream, new Stream()));
+        assertThrows(IllegalStateException.class, () -> streamService.startStream(USER_ID, VALID_VIDEO_ID));
+    }
 
-        verify(streamRepository, times(1)).findAllByUserIdAndEndTimeIsNull(testUserId);
-        verify(streamRepository, never()).findFirstByUserIdAndVideoIdAndEndTimeIsNull(testUserId, testVideoId);
-        verify(streamRepository, never()).save(any(Stream.class));
+    @Test
+    public void stopStream_validVideoId_stopsStream() {
+        when(streamRepository.findFirstByUserIdAndVideoIdAndEndTimeIsNull(any(), any())).thenReturn(Optional.of(stream));
+        when(streamRepository.save(any(Stream.class))).thenReturn(stream);
+
+        Stream result = streamService.stopStream(USER_ID, VALID_VIDEO_ID);
+        assertNotNull(result);
+        assertNotNull(result.getEndTime());
+    }
+
+    @Test
+    public void stopStream_invalidVideoId_throwsIllegalArgumentException() {
+        when(restTemplate.getForEntity(any(String.class), eq(String.class))).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+        assertThrows(IllegalArgumentException.class, () -> streamService.stopStream(USER_ID, INVALID_VIDEO_ID));
+    }
+
+    @Test
+    public void stopStream_streamNotFound_throwsIllegalIllegalStateException() {
+        when(streamRepository.findFirstByUserIdAndVideoIdAndEndTimeIsNull(any(), any())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalStateException.class, () -> streamService.stopStream(USER_ID, VALID_VIDEO_ID));
+    }
+
+    @Test
+    public void getRunningStreams_returnsRunningStreams() {
+        when(streamRepository.findAllByUserIdAndEndTimeIsNull(any())).thenReturn(List.of(stream));
+
+        List<Stream> runningStreams = streamService.getRunningStreams(USER_ID);
+        assertNotNull(runningStreams);
+        assertEquals(1, runningStreams.size());
+        assertEquals(stream, runningStreams.get(0));
     }
 }

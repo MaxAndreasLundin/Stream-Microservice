@@ -19,6 +19,10 @@ public class StreamService {
     private final StreamRepository streamRepository;
 
     public Stream startStream(String userId, String videoId) {
+        if (hasMaxRunningStreams(userId)) {
+            throw new IllegalStateException("User has reached the maximum allowed running streams");
+        }
+
         if (validateVideo(videoId)) {
             Stream stream = new Stream();
             stream.setUserId(userId);
@@ -27,7 +31,6 @@ public class StreamService {
 
             return streamRepository.save(stream);
         } else {
-            // Handle invalid video ID
             throw new IllegalArgumentException("Invalid video ID");
         }
     }
@@ -42,11 +45,9 @@ public class StreamService {
                 stream.setEndTime(LocalDateTime.now());
                 return streamRepository.save(stream);
             } else {
-                // Handle stream not found
                 throw new IllegalStateException("Stream not found");
             }
         } else {
-            // Handle invalid video ID
             throw new IllegalArgumentException("Invalid video ID");
         }
     }
@@ -66,12 +67,16 @@ public class StreamService {
         return false;
     }
 
-
     private ResponseEntity<String> getVideoById(String videoId, String clientId) {
         String apiUrl = "https://tv4-search.a2d.tv/assets";
         RestTemplate restTemplate = new RestTemplate();
         String requestUrl = apiUrl + "?client=" + clientId + "&id=" + videoId;
 
         return restTemplate.getForEntity(requestUrl, String.class);
+    }
+
+    private boolean hasMaxRunningStreams(String userId) {
+        List<Stream> runningStreams = streamRepository.findAllByUserIdAndEndTimeIsNull(userId);
+        return runningStreams.size() >= 2;
     }
 }
