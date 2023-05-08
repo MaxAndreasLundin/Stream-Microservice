@@ -2,20 +2,20 @@ package com.example.microservice.service;
 
 import com.example.microservice.entity.Stream;
 import com.example.microservice.repository.StreamRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class StreamService {
-
-    @Autowired
-    private StreamRepository streamRepository;
+    private final StreamRepository streamRepository;
 
     public Stream startStream(String userId, String videoId) {
         if (validateVideo(videoId)) {
@@ -56,7 +56,7 @@ public class StreamService {
             // Parse the JSON response to check if it contains a valid video object
             // You can use any JSON parsing library like Jackson or Gson
             // For this example, we will use a simple string check
-            return response.getBody().contains("id") && response.getBody().contains(videoId);
+            return Objects.requireNonNull(response.getBody()).contains("id") && response.getBody().contains(videoId);
         }
         return false;
     }
@@ -67,7 +67,6 @@ public class StreamService {
         RestTemplate restTemplate = new RestTemplate();
         String requestUrl = apiUrl + "?client=" + clientId + "&id=" + videoId;
 
-        ResponseEntity<String> response = restTemplate.getForEntity(requestUrl, String.class);
-        return response;
+        return restTemplate.getForEntity(requestUrl, String.class);
     }
 }

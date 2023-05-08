@@ -3,18 +3,17 @@ package com.example.microservice.controller;
 import com.example.microservice.dto.StreamRequest;
 import com.example.microservice.entity.Stream;
 import com.example.microservice.service.StreamService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 public class StreamController {
-
-    @Autowired
-    private StreamService streamService;
+    private final StreamService streamService;
 
     @PostMapping("/startstream")
     public ResponseEntity<Stream> startStream(@RequestBody StreamRequest streamRequest) {
