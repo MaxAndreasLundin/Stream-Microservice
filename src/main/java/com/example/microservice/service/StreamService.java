@@ -57,7 +57,7 @@ public class StreamService {
     }
 
     private boolean validateVideo(String videoId) {
-        ResponseEntity<String> response = getVideoById(videoId, "your-client-id");
+        ResponseEntity<String> response = getVideoById(videoId);
         if (response.getStatusCode() == HttpStatus.OK) {
             // Parse the JSON response to check if it contains a valid video object
             // You can use any JSON parsing library like Jackson or Gson
@@ -67,10 +67,10 @@ public class StreamService {
         return false;
     }
 
-    private ResponseEntity<String> getVideoById(String videoId, String clientId) {
+    private ResponseEntity<String> getVideoById(String videoId) {
         String apiUrl = "https://tv4-search.a2d.tv/assets";
         RestTemplate restTemplate = new RestTemplate();
-        String requestUrl = apiUrl + "?client=" + clientId + "&id=" + videoId;
+        String requestUrl = apiUrl + "?id=" + videoId;
 
         return restTemplate.getForEntity(requestUrl, String.class);
     }
