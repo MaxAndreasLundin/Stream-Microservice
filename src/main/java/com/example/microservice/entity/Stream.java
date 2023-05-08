@@ -18,13 +18,13 @@ public class Stream {
     private Long id;
 
     @Column
-    private String userId;
+    private String userId; // add index_user_Id
 
     @Column
     private String videoId;
 
     @Column
-    private LocalDateTime startTime;
+    private LocalDateTime startTime; // last seen, add index.
 
     @Column
     private LocalDateTime endTime;

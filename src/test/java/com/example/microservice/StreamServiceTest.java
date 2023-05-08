@@ -33,7 +33,7 @@ class StreamServiceTest {
 
     @BeforeEach
     void setUp() {
-        testUserId = "user123";
+        testUserId = "max";
         testVideoId = "13808230";
     }
 

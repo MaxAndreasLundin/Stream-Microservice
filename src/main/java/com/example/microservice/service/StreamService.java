@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -48,6 +49,10 @@ public class StreamService {
             // Handle invalid video ID
             throw new IllegalArgumentException("Invalid video ID");
         }
+    }
+
+    public List<Stream> getRunningStreams(String userId) {
+        return streamRepository.findAllByUserIdAndEndTimeIsNull(userId);
     }
 
     private boolean validateVideo(String videoId) {
