@@ -36,19 +36,15 @@ public class StreamService {
     }
 
     public Stream stopStream(String userId, String videoId) {
-        if (validateVideo(videoId)) {
-            Optional<Stream> streamOptional = streamRepository
-                    .findFirstByUserIdAndVideoIdAndEndTimeIsNull(userId, videoId);
+        Optional<Stream> streamOptional = streamRepository
+                .findFirstByUserIdAndVideoIdAndEndTimeIsNull(userId, videoId);
 
-            if (streamOptional.isPresent()) {
-                Stream stream = streamOptional.get();
-                stream.setEndTime(LocalDateTime.now());
-                return streamRepository.save(stream);
-            } else {
-                throw new IllegalStateException("Stream not found");
-            }
+        if (streamOptional.isPresent()) {
+            Stream stream = streamOptional.get();
+            stream.setEndTime(LocalDateTime.now());
+            return streamRepository.save(stream);
         } else {
-            throw new IllegalArgumentException("Invalid video ID");
+            throw new IllegalStateException("Stream not found");
         }
     }
 
