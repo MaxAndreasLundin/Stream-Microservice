@@ -1,6 +1,7 @@
 package com.example.microservice.controller;
 
 import com.example.microservice.dto.StreamRequest;
+import com.example.microservice.dto.UserIdRequest;
 import com.example.microservice.entity.Stream;
 import com.example.microservice.service.StreamService;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +38,9 @@ public class StreamController {
         }
     }
 
-    @GetMapping("/runningstreams/{userId}")
-    public ResponseEntity<List<Stream>> getRunningStreams(@PathVariable String userId) {
-        List<Stream> runningStreams = streamService.getRunningStreams(userId);
+    @PostMapping("/runningstreams")
+    public ResponseEntity<List<Stream>> getRunningStreams(@RequestBody UserIdRequest userIdRequest) {
+        List<Stream> runningStreams = streamService.getRunningStreams(userIdRequest.getUserId());
         return new ResponseEntity<>(runningStreams, HttpStatus.OK);
     }
 }
