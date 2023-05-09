@@ -19,6 +19,7 @@ import java.util.Optional;
 @Service
 public class StreamService {
     private final StreamRepository streamRepository;
+    private static final int MAX_RUNNING_STREAMS = 2;
 
     public Stream startStream(String userId, String videoId) {
         if (hasMaxRunningStreams(userId)) {
@@ -80,6 +81,6 @@ public class StreamService {
 
     private boolean hasMaxRunningStreams(String userId) {
         List<Stream> runningStreams = streamRepository.findAllByUserIdAndEndTimeIsNull(userId);
-        return runningStreams.size() >= 2;
+        return runningStreams.size() >= MAX_RUNNING_STREAMS;
     }
 }
