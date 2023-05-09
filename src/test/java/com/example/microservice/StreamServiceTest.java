@@ -86,10 +86,10 @@ public class StreamServiceTest {
     }
 
     @Test
-    public void stopStream_invalidVideoId_throwsIllegalArgumentException() {
+    public void stopStream_invalidVideoId_throwsIllegalStateException() {
         when(restTemplate.getForEntity(any(String.class), eq(String.class))).thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
-        assertThrows(IllegalArgumentException.class, () -> streamService.stopStream(USER_ID, INVALID_VIDEO_ID));
+        assertThrows(IllegalStateException.class, () -> streamService.stopStream(USER_ID, INVALID_VIDEO_ID));
     }
 
     @Test
