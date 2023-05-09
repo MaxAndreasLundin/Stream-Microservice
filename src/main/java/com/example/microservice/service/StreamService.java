@@ -1,7 +1,10 @@
 package com.example.microservice.service;
 
+import com.example.microservice.dto.StreamResponse;
 import com.example.microservice.entity.Stream;
 import com.example.microservice.repository.StreamRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class StreamService {
             throw new IllegalStateException("User has reached the maximum allowed running streams");
         }
 
-        if (validateVideo(videoId)) {
+        if (validateStream(videoId)) {
             Stream stream = new Stream();
             stream.setUserId(userId);
             stream.setVideoId(videoId);
@@ -52,18 +54,23 @@ public class StreamService {
         return streamRepository.findAllByUserIdAndEndTimeIsNull(userId);
     }
 
-    private boolean validateVideo(String videoId) {
-        ResponseEntity<String> response = getVideoById(videoId);
+    private boolean validateStream(String videoId) {
+        ResponseEntity<String> response = getStreamById(videoId);
         if (response.getStatusCode() == HttpStatus.OK) {
-            // Parse the JSON response to check if it contains a valid video object
-            // You can use any JSON parsing library like Jackson or Gson
-            // For this example, we will use a simple string check
-            return Objects.requireNonNull(response.getBody()).contains("id") && response.getBody().contains(videoId);
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                StreamResponse streamResponse = mapper.readValue(response.getBody(), StreamResponse.class);
+                if (!streamResponse.getData().isEmpty()) {
+                    return videoId.equals(streamResponse.getData().get(0).getId());
+                }
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
 
-    private ResponseEntity<String> getVideoById(String videoId) {
+    private ResponseEntity<String> getStreamById(String videoId) {
         String apiUrl = "https://tv4-search.a2d.tv/assets";
         RestTemplate restTemplate = new RestTemplate();
         String requestUrl = apiUrl + "?id=" + videoId;
