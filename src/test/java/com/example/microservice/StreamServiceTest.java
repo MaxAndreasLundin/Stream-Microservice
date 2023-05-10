@@ -46,8 +46,7 @@ public class StreamServiceTest {
         stream.setId(1L);
         stream.setUserId(USER_ID);
         stream.setVideoId(VALID_VIDEO_ID);
-        stream.setStartTime(LocalDateTime.now());
-        stream.setEndTime(null);
+        stream.setLastSeen(LocalDateTime.now());
     }
 
     @Test
@@ -78,11 +77,10 @@ public class StreamServiceTest {
     @Test
     public void stopStream_validVideoId_stopsStream() {
         when(streamRepository.findFirstByUserIdAndVideoId(any(), any())).thenReturn(Optional.of(stream));
-        when(streamRepository.save(any(Stream.class))).thenReturn(stream);
 
-        Stream result = streamService.stopStream(USER_ID, VALID_VIDEO_ID);
-        assertNotNull(result);
-        assertNotNull(result.getEndTime());
+        streamService.stopStream(USER_ID, VALID_VIDEO_ID);
+
+        verify(streamRepository, times(1)).delete(any(Stream.class));
     }
 
     @Test

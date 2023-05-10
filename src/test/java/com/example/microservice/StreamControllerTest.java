@@ -17,10 +17,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = StreamController.class)
@@ -43,8 +43,7 @@ public class StreamControllerTest {
         stream.setId(1L);
         stream.setUserId(USER_ID);
         stream.setVideoId(VALID_VIDEO_ID);
-        stream.setStartTime(LocalDateTime.now());
-        stream.setEndTime(null);
+        stream.setLastSeen(LocalDateTime.now());
     }
 
     @Test
@@ -82,35 +81,35 @@ public class StreamControllerTest {
 
     @Test
     public void stopStream_validRequest_stopsStream() throws Exception {
-        when(streamService.stopStream(any(), any())).thenReturn(stream);
+        doNothing().when(streamService).stopStream(any(), any());
 
-        mockMvc.perform(post("/stopstream")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userId\": \"" + USER_ID + "\", \"videoId\": \"" + VALID_VIDEO_ID + "\"}"))
+        mockMvc.perform(delete("/stopstream")
+                        .param("userId", USER_ID)
+                        .param("videoId", VALID_VIDEO_ID))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(stream.getId()))
-                .andExpect(jsonPath("$.userId").value(stream.getUserId()))
-                .andExpect(jsonPath("$.videoId").value(stream.getVideoId()));
+                .andExpect(content().string("Stream successfully stopped"));
     }
 
     @Test
     public void stopStream_invalidRequest_returnsBadRequest() throws Exception {
-        when(streamService.stopStream(any(), any())).thenThrow(new IllegalArgumentException());
+        doThrow(new IllegalArgumentException()).when(streamService).stopStream(any(), any());
 
-        mockMvc.perform(post("/stopstream")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userId\": \"" + USER_ID + "\", \"videoId\": \"" + INVALID_VIDEO_ID + "\"}"))
-                .andExpect(status().isBadRequest());
+        mockMvc.perform(delete("/stopstream")
+                        .param("userId", USER_ID)
+                        .param("videoId", INVALID_VIDEO_ID))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Invalid request"));
     }
 
     @Test
     public void stopStream_streamNotFound_returnsNotFound() throws Exception {
-        when(streamService.stopStream(any(), any())).thenThrow(new IllegalStateException());
+        doThrow(new IllegalStateException()).when(streamService).stopStream(any(), any());
 
-        mockMvc.perform(post("/stopstream")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"userId\": \"" + USER_ID + "\", \"videoId\": \"" + VALID_VIDEO_ID + "\"}"))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(delete("/stopstream")
+                        .param("userId", USER_ID)
+                        .param("videoId", VALID_VIDEO_ID))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Stream not found"));
     }
 
     @Test
