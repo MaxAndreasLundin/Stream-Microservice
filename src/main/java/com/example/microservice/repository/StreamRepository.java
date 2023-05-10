@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface StreamRepository extends JpaRepository<Stream, Long> {
-    Optional<Stream> findFirstByUserIdAndVideoIdAndEndTimeIsNull(String userId, String videoId);
-    List<Stream> findAllByUserIdAndEndTimeIsNull(String userId);
+    Optional<Stream> findFirstByUserIdAndVideoId(String userId, String videoId);
+    List<Stream> findAllByUserId(String userId);
 }

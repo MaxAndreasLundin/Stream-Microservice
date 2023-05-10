@@ -28,15 +28,15 @@ public class StreamController {
         }
     }
 
-    @PostMapping("/stopstream")
-    public ResponseEntity<Stream> stopStream(@RequestBody StreamRequest streamRequest) {
+    @DeleteMapping("/stopstream")
+    public ResponseEntity<String> stopStream(@RequestParam String userId, @RequestParam String videoId) {
         try {
-            Stream stream = streamService.stopStream(streamRequest.getUserId(), streamRequest.getVideoId());
-            return new ResponseEntity<>(stream, HttpStatus.OK);
+            streamService.stopStream(userId, videoId);
+            return new ResponseEntity<>("Stream successfully stopped", HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Invalid request", HttpStatus.BAD_REQUEST);
         } catch (IllegalStateException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Stream not found", HttpStatus.NOT_FOUND);
         }
     }
 

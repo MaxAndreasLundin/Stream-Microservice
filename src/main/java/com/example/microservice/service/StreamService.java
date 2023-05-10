@@ -30,7 +30,7 @@ public class StreamService {
             Stream stream = new Stream();
             stream.setUserId(userId);
             stream.setVideoId(videoId);
-            stream.setStartTime(LocalDateTime.now());
+            stream.setLastSeen(LocalDateTime.now());
 
             return streamRepository.save(stream);
         } else {
@@ -38,21 +38,19 @@ public class StreamService {
         }
     }
 
-    public Stream stopStream(String userId, String videoId) {
+    public void stopStream(String userId, String videoId) {
         Optional<Stream> streamOptional = streamRepository
-                .findFirstByUserIdAndVideoIdAndEndTimeIsNull(userId, videoId);
+                .findFirstByUserIdAndVideoId(userId, videoId);
 
         if (streamOptional.isPresent()) {
-            Stream stream = streamOptional.get();
-            stream.setEndTime(LocalDateTime.now());
-            return streamRepository.save(stream);
+            streamRepository.delete(streamOptional.get());
         } else {
             throw new IllegalStateException("Stream not found");
         }
     }
 
     public List<Stream> getRunningStreams(String userId) {
-        return streamRepository.findAllByUserIdAndEndTimeIsNull(userId);
+        return streamRepository.findAllByUserId(userId);
     }
 
     private boolean validateStream(String videoId) {
@@ -80,7 +78,7 @@ public class StreamService {
     }
 
     private boolean hasMaxRunningStreams(String userId) {
-        List<Stream> runningStreams = streamRepository.findAllByUserIdAndEndTimeIsNull(userId);
+        List<Stream> runningStreams = streamRepository.findAllByUserId(userId);
         return runningStreams.size() >= MAX_RUNNING_STREAMS;
     }
 }

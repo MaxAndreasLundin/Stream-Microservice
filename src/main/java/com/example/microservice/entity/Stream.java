@@ -5,7 +5,11 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Table()
+@Table(name = "stream",
+        indexes = {
+                @Index(name = "index_user_Id", columnList = "userId"),
+                @Index(name = "index_last_seen", columnList = "lastSeen")
+        })
 @Entity
 @Getter
 @Setter
@@ -18,14 +22,12 @@ public class Stream {
     private Long id;
 
     @Column
-    private String userId; // add index_user_Id
+    private String userId;
 
     @Column
     private String videoId;
 
     @Column
-    private LocalDateTime startTime; // last seen, add index.
-
-    @Column
-    private LocalDateTime endTime;
+    private LocalDateTime lastSeen;
 }
+

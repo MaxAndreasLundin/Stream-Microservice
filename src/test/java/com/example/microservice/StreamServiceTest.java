@@ -52,7 +52,7 @@ public class StreamServiceTest {
 
     @Test
     public void startStream_validVideoId_startsNewStream() {
-        when(streamRepository.findAllByUserIdAndEndTimeIsNull(any())).thenReturn(List.of());
+        when(streamRepository.findAllByUserId(any())).thenReturn(List.of());
         when(streamRepository.save(any(Stream.class))).thenReturn(stream);
         when(restTemplate.getForEntity(any(String.class), eq(String.class))).thenReturn(new ResponseEntity<>("{\"id\": \"" + VALID_VIDEO_ID + "\"}", HttpStatus.OK));
 
@@ -71,13 +71,13 @@ public class StreamServiceTest {
 
     @Test
     public void startStream_userHasMaxRunningStreams_throwsIllegalStateException() {
-        when(streamRepository.findAllByUserIdAndEndTimeIsNull(any())).thenReturn(List.of(stream, new Stream()));
+        when(streamRepository.findAllByUserId(any())).thenReturn(List.of(stream, new Stream()));
         assertThrows(IllegalStateException.class, () -> streamService.startStream(USER_ID, VALID_VIDEO_ID));
     }
 
     @Test
     public void stopStream_validVideoId_stopsStream() {
-        when(streamRepository.findFirstByUserIdAndVideoIdAndEndTimeIsNull(any(), any())).thenReturn(Optional.of(stream));
+        when(streamRepository.findFirstByUserIdAndVideoId(any(), any())).thenReturn(Optional.of(stream));
         when(streamRepository.save(any(Stream.class))).thenReturn(stream);
 
         Stream result = streamService.stopStream(USER_ID, VALID_VIDEO_ID);
@@ -94,14 +94,14 @@ public class StreamServiceTest {
 
     @Test
     public void stopStream_streamNotFound_throwsIllegalIllegalStateException() {
-        when(streamRepository.findFirstByUserIdAndVideoIdAndEndTimeIsNull(any(), any())).thenReturn(Optional.empty());
+        when(streamRepository.findFirstByUserIdAndVideoId(any(), any())).thenReturn(Optional.empty());
 
         assertThrows(IllegalStateException.class, () -> streamService.stopStream(USER_ID, VALID_VIDEO_ID));
     }
 
     @Test
     public void getRunningStreams_returnsRunningStreams() {
-        when(streamRepository.findAllByUserIdAndEndTimeIsNull(any())).thenReturn(List.of(stream));
+        when(streamRepository.findAllByUserId(any())).thenReturn(List.of(stream));
 
         List<Stream> runningStreams = streamService.getRunningStreams(USER_ID);
         assertNotNull(runningStreams);
