@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  bolig-java-db:
+  java-db:
     image: postgres:latest
     ports:
       - "5432:5432"
@@ -9,6 +9,16 @@ services:
       POSTGRES_PASSWORD: 123
       POSTGRES_DB: micro
     networks:
-      - bolig-network
+      - tv4-network
+
+  micro-service:
+    image: tv4-image
+    ports:
+      - "8080:8080"
+    depends_on:
+      - java-db
+    networks:
+      - tv4-network
+
 networks:
-  bolig-network:
+  tv4-network:
