@@ -10,13 +10,19 @@ services:
       POSTGRES_DB: micro
     networks:
       - tv4-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
   micro-service:
     image: tv4-image
     ports:
       - "8080:8080"
     depends_on:
-      - java-db
+      java-db:
+        condition: service_healthy
     networks:
       - tv4-network
 
