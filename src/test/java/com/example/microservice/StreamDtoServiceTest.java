@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {StreamService.class})
-public class StreamServiceTest {
+public class StreamDtoServiceTest {
     private static final String USER_ID = "Max";
     private static final String VALID_VIDEO_ID = "13808230";
     private static final String INVALID_VIDEO_ID = "INVALID_VIDEO_ID";

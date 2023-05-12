@@ -1,7 +1,5 @@
 package com.example.microservice.controller;
 
-import com.example.microservice.dto.StreamRequest;
-import com.example.microservice.dto.UserIdRequest;
 import com.example.microservice.entity.Stream;
 import com.example.microservice.service.StreamService;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +11,14 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/v1/stream")
 public class StreamController {
     private final StreamService streamService;
 
-    @PostMapping("/startstream")
-    public ResponseEntity<Stream> startStream(@RequestBody StreamRequest streamRequest) {
+    @PostMapping
+    public ResponseEntity<Stream> startStream(@RequestParam String userId, @RequestParam String videoId) {
         try {
-            Stream stream = streamService.startStream(streamRequest.getUserId(), streamRequest.getVideoId());
+            Stream stream = streamService.startStream(userId, videoId);
             return new ResponseEntity<>(stream, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -28,7 +27,7 @@ public class StreamController {
         }
     }
 
-    @DeleteMapping("/stopstream")
+    @DeleteMapping
     public ResponseEntity<String> stopStream(@RequestParam String userId, @RequestParam String videoId) {
         try {
             streamService.stopStream(userId, videoId);
@@ -40,9 +39,9 @@ public class StreamController {
         }
     }
 
-    @PostMapping("/runningstreams")
-    public ResponseEntity<List<Stream>> getRunningStreams(@RequestBody UserIdRequest userIdRequest) {
-        List<Stream> runningStreams = streamService.getRunningStreams(userIdRequest.getUserId());
+    @GetMapping
+    public ResponseEntity<List<Stream>> getRunningStreams(@RequestParam String userId) {
+        List<Stream> runningStreams = streamService.getRunningStreams(userId);
         return new ResponseEntity<>(runningStreams, HttpStatus.OK);
     }
 }

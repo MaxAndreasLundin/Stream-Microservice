@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Table(name = "stream",
         indexes = {
-                @Index(name = "index_user_Id", columnList = "userId"),
+                @Index(name = "index_user_id", columnList = "userId"),
                 @Index(name = "index_last_seen", columnList = "lastSeen")
         })
 @Entity

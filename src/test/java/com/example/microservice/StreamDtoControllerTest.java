@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = StreamController.class)
-public class StreamControllerTest {
+public class StreamDtoControllerTest {
     private static final String USER_ID = "Max";
     private static final String VALID_VIDEO_ID = "13808230";
     private static final String INVALID_VIDEO_ID = "INVALID_VIDEO_ID";
@@ -87,7 +87,7 @@ public class StreamControllerTest {
                         .param("userId", USER_ID)
                         .param("videoId", VALID_VIDEO_ID))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Stream successfully stopped"));
+                .andExpect(content().string("StreamDto successfully stopped"));
     }
 
     @Test
@@ -109,7 +109,7 @@ public class StreamControllerTest {
                         .param("userId", USER_ID)
                         .param("videoId", VALID_VIDEO_ID))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Stream not found"));
+                .andExpect(content().string("StreamDto not found"));
     }
 
     @Test
