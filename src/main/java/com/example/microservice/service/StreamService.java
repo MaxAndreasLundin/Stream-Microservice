@@ -17,6 +17,7 @@ import java.util.Optional;
 @Service
 public class StreamService {
     private final StreamRepository streamRepository;
+    private final RestTemplate restTemplate;
     private static final int MAX_RUNNING_STREAMS = 2;
 
     public Stream startStream(String userId, String videoId) {
@@ -54,7 +55,6 @@ public class StreamService {
     // Internal server error would return true to allow user to watch.
     private boolean videoExistsLenient(String videoId) {
         String url = "https://tv4-search.a2d.tv/assets/" + videoId;
-        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         return response.getStatusCode() != HttpStatus.NOT_FOUND;
     }
