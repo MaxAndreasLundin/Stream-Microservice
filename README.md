@@ -24,16 +24,16 @@ This section guides you on how to set up the Stream Microservice on your local m
 
 1. Clone the repository to your local machine.
 2. Navigate to the root directory of the project.
-3. Build the JAR file for your application using the following command: `mvn clean package`
+3. Build the JAR file for your application using the following command: **`mvn clean package`**
 
 This command builds a JAR file of your application using Maven. The clean command removes any previous builds, and the
 package command compiles your code and packages it into a JAR file.
 
-4. Build the Docker image for your application using the following command: `docker build -t tv4-image .`
+4. Build the Docker image for your application using the following command: **`docker build -t tv4-image .`**
    This command builds a Docker image named "tv4-image" using the Dockerfile in your current directory.
-5. Start the database and the microservice using Docker Compose with the following command: `docker compose up`
+5. Start the database and the microservice using Docker Compose with the following command: **`docker compose up`**
    This command starts the services defined in your docker-compose.yml.
-6. To stop the services, you can use the following command: `docker compose down`
+6. To stop the services, you can use the following command: **`docker compose down`**
    This command stops and removes the containers defined in your docker-compose.yml.
 
 ### Service Dependencies
@@ -46,7 +46,7 @@ The Stream Microservice validates video IDs by interacting with the TV4 Search A
 is https://tv4-search.a2d.tv/. Documentation for the TV4 Search API can be found at https://tv4-search.a2d.tv/docs/.
 
 When a video stream is started, the Stream Microservice makes a GET request to the TV4 Search API at the endpoint
-**`/assets/{videoId}`** where `{videoId}` is the ID of the video to be streamed. The API's response is used to validate
+**`/assets/{videoId}`** where **`{videoId}`** is the ID of the video to be streamed. The API's response is used to validate
 whether
 the video ID is valid. If the TV4 Search API returns a 404 Not Found status, the video ID is considered invalid, and the
 stream cannot be started. However, in case of other server errors (5xx status codes), the video ID validation is
@@ -72,14 +72,14 @@ Note: For testing, the application-test.yml file is used, which sets up an in-me
 After following the setup instructions and configuring the service, you can interact with it via the following REST
 endpoints:
 
-* `POST /v1/stream`: Start a new video stream. Requires userId and videoId parameters. If the user has already started
+* **`POST /v1/stream`**: Start a new video stream. Requires userId and videoId parameters. If the user has already started
   the
   maximum number of streams (2), a 403 Forbidden response is returned. If the videoId is invalid, a 400 Bad Request
   response is returned.
-* `DELETE /v1/stream`: Stop an existing video stream. Requires userId and videoId parameters. If the specified stream
+* **`DELETE /v1/stream`**: Stop an existing video stream. Requires userId and videoId parameters. If the specified stream
   does
   not exist, a 404 Not Found response is returned.
-* `GET /v1/stream`: Get all currently running streams for a user. Requires the userId parameter.
+* **`GET /v1/stream`**: Get all currently running streams for a user. Requires the userId parameter.
 
 ### Error Handling
 
@@ -99,10 +99,10 @@ some common scenarios:
 
 The Stream Microservice API uses URI versioning. This means that the version of the API is included in the path of the
 URI. Currently, the API is at version 1, and so all endpoints begin with /v1. For example, to start a new stream, you
-would send a POST request to `/v1/stream`.
+would send a POST request to **`/v1/stream`**.
 
 When a new version of the API is released, the version number in the URI will be incremented. For example, if version 2
-of the API is released, the endpoint to start a new stream would be /v2/stream.
+of the API is released, the endpoint to start a new stream would be **`/v2/stream`**.
 
 Please note that when a new version is released, older versions will eventually be deprecated. We will provide a
 migration guide with each new version to assist with the transition, and we will give advance notice before any version
@@ -153,35 +153,35 @@ classes.
 
 The StreamServiceTest class contains tests for the StreamService. These tests include:
 
-* `shouldStopStreamGivenValidUserAndVideoId`: This test verifies that a stream is successfully stopped given a valid
+* **`shouldStopStreamGivenValidUserAndVideoId`**: This test verifies that a stream is successfully stopped given a valid
   user
   ID and video ID. It mocks the StreamRepository to simulate the stream and checks if the stream is deleted
   successfully.
-* `shouldThrowExceptionWhenStoppingNonExistingStream`: This test checks if an exception is thrown when attempting to
+* **`shouldThrowExceptionWhenStoppingNonExistingStream`**: This test checks if an exception is thrown when attempting to
   stop
   a non-existing stream.
-* `shouldStartStreamGivenValidUserAndVideoId`: This test checks if a stream is successfully started given a valid user
+* **`shouldStartStreamGivenValidUserAndVideoId`**: This test checks if a stream is successfully started given a valid user
   ID
   and video ID. It mocks the StreamRepository and RestTemplate to simulate the conditions for starting a stream and
   checks if the stream is saved successfully.
-* `shouldThrowExceptionWhenStartingStreamAndMaxRunningStreamsReached`: This test verifies that an exception is thrown
+* **`shouldThrowExceptionWhenStartingStreamAndMaxRunningStreamsReached`**: This test verifies that an exception is thrown
   when
   the maximum number of running streams for a user is reached.
-* `shouldThrowExceptionWhenStartingStreamWithInvalidVideoId`: This test verifies that an exception is thrown when
+* **`shouldThrowExceptionWhenStartingStreamWithInvalidVideoId`**: This test verifies that an exception is thrown when
   attempting to start a stream with an invalid video ID.
 
 The StreamControllerTest class contains tests for the StreamController. These tests include:
 
-* `shouldStartStreamGivenValidUserAndVideoId`: This test verifies that a POST request to the /v1/stream endpoint with a
+* **`shouldStartStreamGivenValidUserAndVideoId`**: This test verifies that a POST request to the /v1/stream endpoint with a
   valid user ID and video ID returns an OK status. It mocks the StreamService to simulate the conditions for starting a
   stream.
-* `shouldStopStreamGivenValidUserAndVideoId`: This test verifies that a DELETE request to the /v1/stream endpoint with a
+* **`shouldStopStreamGivenValidUserAndVideoId`**: This test verifies that a DELETE request to the /v1/stream endpoint with a
   valid user ID and video ID returns an OK status.
-* `shouldGetRunningStreamsGivenValidUserId`: This test checks if a GET request to the /v1/stream endpoint with a valid
+* **`shouldGetRunningStreamsGivenValidUserId`**: This test checks if a GET request to the /v1/stream endpoint with a valid
   user ID returns an OK status. It mocks the StreamService to simulate the conditions for getting running streams.
 
 To run the tests, use the following Maven command:
-`mvn test`
+**`mvn test`**
 
 ### Deployment
 
@@ -195,10 +195,10 @@ Dockerfile and docker-compose.yml file in the project root directory provide the
 
 This microservice uses Swagger UI for API documentation, which provides an interactive interface for exploring the API's
 endpoints. Once the microservice is running, the Swagger UI page is available at:
-http://localhost:8080/swagger-ui/index.html#/
+**http://localhost:8080/swagger-ui/index.html#/**
 You can explore the various API endpoints, their parameters, responses, and test them directly from this page.
 
 In addition, the OpenAPI description of the API, which provides a machine-readable specification of the API's endpoints,
 parameters, responses, etc., is available in JSON format at:
-http://localhost:8080/v3/api-docs
+**http://localhost:8080/v3/api-docs**
 
