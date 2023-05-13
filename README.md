@@ -4,6 +4,19 @@ Welcome to the Stream Microservice, a robust and scalable solution for managing 
 ensure that users can enjoy their favorite content without exceeding their stream limit, offering an optimal balance
 between user experience and resource management.
 
+## Table of Contents
+1. [Overview](#overview)
+2. [Setup Instructions](#setup-instructions)
+3. [Service Dependencies](#service-dependencies)
+4. [Configuration](#configuration)
+5. [Running the Service](#running-the-service)
+6. [Error Handling](#error-handling)
+7. [API Versioning](#api-versioning)
+8. [Service Details](#service-details)
+9. [Testing](#testing)
+10. [Deployment](#deployment)
+11. [API Documentation](#api-documentation)
+
 ### Overview
 
 The Stream Microservice is a Spring Boot application that serves to limit the number of simultaneous video streams that
