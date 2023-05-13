@@ -12,9 +12,9 @@ This section guides you on how to set up the Stream Microservice on your local m
 
 #### Prerequisites
 
-Ensure that you have Docker installed on your machine.
-Ensure that you have Docker Compose installed on your machine.
-Ensure that you have Maven installed on your machine.
+* Ensure that you have [Docker](https://docs.docker.com/get-docker/) installed on your machine.
+* Ensure that you have [Docker Compose](https://docs.docker.com/compose/install/) installed on your machine.
+* Ensure that you have [Maven](https://maven.apache.org/install.html) installed on your machine.
 
 #### Steps
 
