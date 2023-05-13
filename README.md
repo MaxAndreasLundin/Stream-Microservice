@@ -113,24 +113,38 @@ improvements.
 
 ### Service Details
 
-The StreamService is the core of the application. It starts, stops, and retrieves video streams for users. It ensures
-that a user cannot have more than two running streams at a time and that video IDs are valid. It uses the
-StreamRepository to interact with the database, and it periodically purges any streams that have been inactive for over
-an hour.
+#### StreamService
 
-The **StreamRepository** is a Spring Data JPA repository that provides methods for finding, saving, and deleting streams
-in
-the database. It also provides a method for deleting all streams that have been inactive for over an hour.
+This is the core service that manages the operations of starting, stopping, and fetching video streams for a user. It
+ensures that a user does not exceed the maximum limit of two concurrent streams and checks for the validity of video
+IDs. The service utilizes StreamRepository to interact with the database for these operations. Additionally, it employs
+a scheduled task, running every 60 seconds, that purges any streams that have been inactive for over an hour. This is an
+important feature for maintaining system performance and preventing the accumulation of stale data.
 
-The **StreamController** is the REST controller for the application. It maps the above endpoints to their corresponding
+#### StreamRepository
+
+The StreamRepository is a Spring Data JPA repository that provides methods for finding, saving, and deleting streams
+in the database. It also provides a method for deleting all streams that have been inactive for over an hour.
+
+#### StreamController
+
+The StreamController is the REST controller for the application. It maps the above endpoints to their corresponding
 service methods and handles any errors that occur.
 
-The **RestTemplateConfig** is a configuration class that provides a RestTemplate bean, which is used by StreamService to
-make HTTP requests.
+#### RestTemplateConfig
 
-The **Stream** entity represents a video stream. It includes the ID of the stream, the ID of the user, the ID of the
-video,
-and the time the stream was started.
+This configuration class provides a RestTemplate bean used by the StreamService class. RestTemplate is a utility class
+that offers convenient methods for consuming RESTful web services, essentially abstracting the communication between our
+application and other services via HTTP. In our application, RestTemplate is used to make outbound HTTP requests to
+verify video IDs with the TV4 Search API, ensuring that users can only start streams with valid video IDs. This
+validation process is crucial for maintaining the integrity of our service.
+
+#### Stream entity
+
+The Stream entity represents a video stream. It includes the ID of the stream, the ID of the user, and the ID of the
+video. It also includes a 'lastSeen' timestamp, which indicates the last point of contact between the Stream
+Microservice and the external microservice that communicated this information. This 'lastSeen' timestamp is crucial for
+tracking the activity status of each stream and facilitating the regular purging of inactive streams.
 
 ### Testing
 
@@ -139,24 +153,32 @@ classes.
 
 The StreamServiceTest class contains tests for the StreamService. These tests include:
 
-* `shouldStopStreamGivenValidUserAndVideoId`: This test verifies that a stream is successfully stopped given a valid user
+* `shouldStopStreamGivenValidUserAndVideoId`: This test verifies that a stream is successfully stopped given a valid
+  user
   ID and video ID. It mocks the StreamRepository to simulate the stream and checks if the stream is deleted
   successfully.
-* `shouldThrowExceptionWhenStoppingNonExistingStream`: This test checks if an exception is thrown when attempting to stop
+* `shouldThrowExceptionWhenStoppingNonExistingStream`: This test checks if an exception is thrown when attempting to
+  stop
   a non-existing stream.
-* `shouldStartStreamGivenValidUserAndVideoId`: This test checks if a stream is successfully started given a valid user ID
+* `shouldStartStreamGivenValidUserAndVideoId`: This test checks if a stream is successfully started given a valid user
+  ID
   and video ID. It mocks the StreamRepository and RestTemplate to simulate the conditions for starting a stream and
   checks if the stream is saved successfully.
-* `shouldThrowExceptionWhenStartingStreamAndMaxRunningStreamsReached`: This test verifies that an exception is thrown when
+* `shouldThrowExceptionWhenStartingStreamAndMaxRunningStreamsReached`: This test verifies that an exception is thrown
+  when
   the maximum number of running streams for a user is reached.
 * `shouldThrowExceptionWhenStartingStreamWithInvalidVideoId`: This test verifies that an exception is thrown when
   attempting to start a stream with an invalid video ID.
 
 The StreamControllerTest class contains tests for the StreamController. These tests include:
 
-* `shouldStartStreamGivenValidUserAndVideoId`: This test verifies that a POST request to the /v1/stream endpoint with a valid user ID and video ID returns an OK status. It mocks the StreamService to simulate the conditions for starting a stream.
-* `shouldStopStreamGivenValidUserAndVideoId`: This test verifies that a DELETE request to the /v1/stream endpoint with a valid user ID and video ID returns an OK status.
-* `shouldGetRunningStreamsGivenValidUserId`: This test checks if a GET request to the /v1/stream endpoint with a valid user ID returns an OK status. It mocks the StreamService to simulate the conditions for getting running streams.
+* `shouldStartStreamGivenValidUserAndVideoId`: This test verifies that a POST request to the /v1/stream endpoint with a
+  valid user ID and video ID returns an OK status. It mocks the StreamService to simulate the conditions for starting a
+  stream.
+* `shouldStopStreamGivenValidUserAndVideoId`: This test verifies that a DELETE request to the /v1/stream endpoint with a
+  valid user ID and video ID returns an OK status.
+* `shouldGetRunningStreamsGivenValidUserId`: This test checks if a GET request to the /v1/stream endpoint with a valid
+  user ID returns an OK status. It mocks the StreamService to simulate the conditions for getting running streams.
 
 To run the tests, use the following Maven command:
 `mvn test`
