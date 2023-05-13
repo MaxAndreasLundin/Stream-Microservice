@@ -7,15 +7,26 @@ between user experience and resource management.
 ## Table of Contents
 1. [Overview](#overview)
 2. [Setup Instructions](#setup-instructions)
+  - [Prerequisites](#prerequisites)
+  - [Steps](#steps)
 3. [Service Dependencies](#service-dependencies)
+  - [TV4 Search API](#tv4-search-api)
 4. [Configuration](#configuration)
 5. [Running the Service](#running-the-service)
 6. [Error Handling](#error-handling)
 7. [API Versioning](#api-versioning)
 8. [Service Details](#service-details)
+  - [StreamService](#streamservice)
+  - [StreamRepository](#streamrepository)
+  - [StreamController](#streamcontroller)
+  - [RestTemplateConfig](#resttemplateconfig)
+  - [Stream entity](#stream-entity)
 9. [Testing](#testing)
+  - [StreamServiceTest](#streamservicetest)
+  - [StreamControllerTest](#streamcontrollertest)
 10. [Deployment](#deployment)
 11. [API Documentation](#api-documentation)
+
 
 ### Overview
 
@@ -164,6 +175,8 @@ tracking the activity status of each stream and facilitating the regular purging
 The Stream Microservice contains unit tests that validate the functionality of the StreamService and StreamController
 classes.
 
+#### StreamServiceTest
+
 The StreamServiceTest class contains tests for the StreamService. These tests include:
 
 * **`shouldStopStreamGivenValidUserAndVideoId`**: This test verifies that a stream is successfully stopped given a valid
@@ -182,6 +195,8 @@ The StreamServiceTest class contains tests for the StreamService. These tests in
   the maximum number of running streams for a user is reached.
 * **`shouldThrowExceptionWhenStartingStreamWithInvalidVideoId`**: This test verifies that an exception is thrown when
   attempting to start a stream with an invalid video ID.
+
+#### StreamControllerTest
 
 The StreamControllerTest class contains tests for the StreamController. These tests include:
 
