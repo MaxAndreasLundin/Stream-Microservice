@@ -5,6 +5,7 @@ import com.example.microservice.repository.StreamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -61,5 +62,10 @@ public class StreamService {
     private boolean hasMaxRunningStreams(String userId) {
         List<Stream> runningStreams = streamRepository.findAllByUserId(userId);
         return runningStreams.size() >= MAX_RUNNING_STREAMS;
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void purgeOldStreams() {
+        streamRepository.deleteByOlderThanOneHour();
     }
 }
