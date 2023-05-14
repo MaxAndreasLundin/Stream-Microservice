@@ -119,8 +119,6 @@ endpoints:
 The Stream Microservice uses standard HTTP status codes to indicate the success or failure of an API request. Here are
 some common scenarios:
 
-* 400 Bad Request: This status code is returned when the request was invalid. For example, trying to start a stream with
-  an invalid videoId will result in this status code. Check your request parameters for any mistakes.
 * 403 Forbidden: This status code is returned when the request is valid, but the server is refusing to respond to it.
   For example, if a user tries to start more than two streams, the service will respond with this status code.
 * 404 Not Found: This status code is returned when the requested resource could not be found. For example, if a user
